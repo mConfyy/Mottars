@@ -1,14 +1,15 @@
+
 import { Car, Seller, Review } from './types';
 
 export const BRANDS = [
-  { name: 'Toyota', logo: 'https://cdn.simpleicons.org/toyota' },
-  { name: 'Honda', logo: 'https://cdn.simpleicons.org/honda' },
-  { name: 'Mercedes', logo: 'https://cdn.simpleicons.org/mercedes' },
-  { name: 'Lexus', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Lexus_logo_2024.svg/1024px-Lexus_logo_2024.svg.png' }, 
-  { name: 'Ford', logo: 'https://cdn.simpleicons.org/ford' },
-  { name: 'Hyundai', logo: 'https://cdn.simpleicons.org/hyundai' },
-  { name: 'BMW', logo: 'https://cdn.simpleicons.org/bmw' },
-  { name: 'Tesla', logo: 'https://cdn.simpleicons.org/tesla' },
+  { name: 'Toyota', logo: 'https://cdn.simpleicons.org/toyota/1A1A1A' },
+  { name: 'Honda', logo: 'https://cdn.simpleicons.org/honda/1A1A1A' },
+  { name: 'Mercedes', logo: 'https://cdn.simpleicons.org/mercedes/1A1A1A' },
+  { name: 'Lexus', logo: 'https://cdn.simpleicons.org/lexus/1A1A1A' }, 
+  { name: 'Ford', logo: 'https://cdn.simpleicons.org/ford/1A1A1A' },
+  { name: 'Hyundai', logo: 'https://cdn.simpleicons.org/hyundai/1A1A1A' },
+  { name: 'BMW', logo: 'https://cdn.simpleicons.org/bmw/1A1A1A' },
+  { name: 'Tesla', logo: 'https://cdn.simpleicons.org/tesla/1A1A1A' },
 ];
 
 export const MOCK_SELLERS: Record<string, Seller> = {

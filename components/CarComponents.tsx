@@ -106,7 +106,7 @@ export const HeroSearch = ({ onSearch }: SearchProps) => {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setQuery(val);
-    if (val.length > 1) {
+    if (val.length > 0) {
       const uniqueModels = Array.from(new Set(MOCK_CARS
         .map(c => `${c.make} ${c.model}`)
         .filter(s => s.toLowerCase().includes(val.toLowerCase()))
@@ -188,7 +188,7 @@ export const HeroSearch = ({ onSearch }: SearchProps) => {
                     placeholder="Search by make, model, or keyword..."
                     value={query}
                     onChange={handleInputChange}
-                    onFocus={() => query.length > 1 && setShowSuggestions(true)}
+                    onFocus={() => query.length > 0 && setShowSuggestions(true)}
                   />
                   {query && (
                     <button type="button" onClick={clearSearch} className="absolute right-2 p-1 text-neutral-400 hover:text-neutral-600">

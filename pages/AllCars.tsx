@@ -1,13 +1,22 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Layout } from '../components/Layout';
-import { CarCard, HeroSearch } from '../components/CarComponents';
+import { CarCard } from '../components/CarComponents';
 import { MOCK_CARS, MOCK_SELLERS } from '../constants';
 import { AppRoute } from '../types';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 export const AllCars = () => {
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchParams] = useSearchParams();
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
+
+  // Update state if URL param changes
+  useEffect(() => {
+    const query = searchParams.get('search');
+    if (query !== null) {
+        setSearchQuery(query);
+    }
+  }, [searchParams]);
 
   const filteredCars = useMemo(() => {
     // Filter out cars with no images
@@ -15,9 +24,14 @@ export const AllCars = () => {
     
     if (!searchQuery) return cars;
     
+    const lowerQuery = searchQuery.toLowerCase();
+
     return cars.filter(car => 
-      car.make.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      car.model.toLowerCase().includes(searchQuery.toLowerCase())
+      car.make.toLowerCase().includes(lowerQuery) || 
+      car.model.toLowerCase().includes(lowerQuery) ||
+      car.location.toLowerCase().includes(lowerQuery) ||
+      car.year.toString().includes(lowerQuery) ||
+      car.condition.toLowerCase().includes(lowerQuery)
     );
   }, [searchQuery]);
 
@@ -36,11 +50,11 @@ export const AllCars = () => {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="mb-6">
-                <p className="text-neutral-500 mb-4">Showing {filteredCars.length} results</p>
+                <p className="text-neutral-500 mb-4">Showing {filteredCars.length} results {searchQuery && `for "${searchQuery}"`}</p>
                 {/* Re-use search input logic style, simplified */}
                 <input 
                     type="text" 
-                    placeholder="Quick search..." 
+                    placeholder="Search make, model, year, or location..." 
                     className="w-full md:w-1/3 p-3 rounded-xl border border-neutral-200 focus:ring-2 focus:ring-accent/20 outline-none"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
