@@ -1,25 +1,45 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Layout } from '../components/Layout';
 import { Button, Modal, Badge, Input } from '../components/ui';
 import { MOCK_CARS, MOCK_SELLERS, MOCK_REVIEWS } from '../constants';
-import { MapPin, Calendar, Gauge, ShieldCheck, MessageCircle, Phone, CheckCircle2, ChevronLeft, Share2 } from 'lucide-react';
+import { MapPin, Calendar, Gauge, ShieldCheck, MessageCircle, Phone, CheckCircle2, ChevronLeft, Share2, ArrowLeft, Send, X } from 'lucide-react';
 import { AppRoute } from '../types';
 
 export const CarDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const car = MOCK_CARS.find(c => c.id === id);
   const seller = car ? MOCK_SELLERS[car.sellerId] : null;
   
   const [isOfferModalOpen, setOfferModalOpen] = useState(false);
   const [offerSent, setOfferSent] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
+  
+  // Chat State
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [chatMessage, setChatMessage] = useState('');
+  const [chatHistory, setChatHistory] = useState<{sender: 'me' | 'seller', text: string, time: string}[]>([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
-  if (!car || !seller) {
+  useEffect(() => {
+    if (isChatOpen && chatHistory.length === 0) {
+      setChatHistory([
+        { sender: 'seller', text: `Hello! I see you're interested in the ${car?.year} ${car?.make} ${car?.model}. How can I help you today?`, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }
+      ]);
+    }
+  }, [isChatOpen, car]);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatHistory]);
+
+  // Added check for valid images array
+  if (!car || !seller || !car.images || car.images.length === 0) {
     return (
       <Layout>
         <div className="min-h-[60vh] flex flex-col items-center justify-center">
-          <h2 className="text-2xl font-bold text-neutral-900">Listing Not Found</h2>
+          <h2 className="text-2xl font-bold text-neutral-900">Listing Not Found or Invalid</h2>
           <Link to={AppRoute.HOME}><Button variant="secondary" className="mt-4">Back to Home</Button></Link>
         </div>
       </Layout>
@@ -36,22 +56,66 @@ export const CarDetails = () => {
         }, 3000);
     }, 1000);
   };
+  
+  const handleCall = () => {
+      window.location.href = "tel:+2348000000000"; // Mock number
+  };
+  
+  const handleMessage = () => {
+      setIsChatOpen(true);
+  };
+
+  const sendChatMessage = (e: React.FormEvent) => {
+      e.preventDefault();
+      if (!chatMessage.trim()) return;
+      
+      const newMsg = { sender: 'me' as const, text: chatMessage, time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) };
+      setChatHistory(prev => [...prev, newMsg]);
+      setChatMessage('');
+
+      // Simulate reply
+      setTimeout(() => {
+          setChatHistory(prev => [...prev, { 
+              sender: 'seller', 
+              text: "Thanks for your message! Is there a specific time you'd like to inspect the car?", 
+              time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) 
+          }]);
+      }, 1500);
+  };
 
   const isAuthenticated = localStorage.getItem('auth') === 'true';
 
   return (
     <Layout>
-      <div className="bg-white pb-12">
+      {/* Floating Back Button for Mobile */}
+      <div className="fixed top-20 left-4 z-30 md:hidden">
+         <button 
+           onClick={() => navigate(-1)} 
+           className="p-3 bg-white/90 backdrop-blur shadow-lg rounded-full text-primary hover:bg-white border border-neutral-100"
+         >
+           <ArrowLeft className="w-5 h-5" />
+         </button>
+      </div>
+
+      <div className="bg-white pb-32 md:pb-12 min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <Link to={AppRoute.HOME} className="inline-flex items-center text-sm text-neutral-500 hover:text-primary mb-6">
-            <ChevronLeft className="w-4 h-4 mr-1" /> Back to search
-          </Link>
+          
+          {/* Desktop Back Button */}
+          <div className="hidden md:flex mb-6">
+             <button 
+                onClick={() => navigate(-1)}
+                className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium text-neutral-600 hover:text-primary hover:bg-neutral-100 transition-colors"
+             >
+                <ChevronLeft className="w-4 h-4 mr-1.5" /> 
+                Back to search results
+             </button>
+          </div>
 
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Left Col: Images & Details */}
             <div className="lg:col-span-2 space-y-8">
               {/* Gallery */}
-              <div className="bg-neutral-100 rounded-2xl overflow-hidden">
+              <div className="bg-neutral-100 rounded-2xl overflow-hidden shadow-sm border border-neutral-100">
                 <div className="aspect-[16/10] bg-neutral-200 relative">
                   <img src={car.images[selectedImage]} alt={car.make} className="w-full h-full object-cover" />
                   <button className="absolute top-4 right-4 p-2 bg-white/80 rounded-full hover:bg-white text-primary transition-all shadow-sm">
@@ -59,12 +123,12 @@ export const CarDetails = () => {
                   </button>
                 </div>
                 {car.images.length > 1 && (
-                  <div className="flex gap-2 p-2 overflow-x-auto">
+                  <div className="flex gap-2 p-2 overflow-x-auto bg-white">
                     {car.images.map((img, idx) => (
                       <button 
                         key={idx}
                         onClick={() => setSelectedImage(idx)} 
-                        className={`relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 ${selectedImage === idx ? 'ring-2 ring-accent' : 'opacity-70 hover:opacity-100'}`}
+                        className={`relative w-24 h-16 rounded-lg overflow-hidden flex-shrink-0 transition-all ${selectedImage === idx ? 'ring-2 ring-accent ring-offset-2' : 'opacity-70 hover:opacity-100'}`}
                       >
                         <img src={img} className="w-full h-full object-cover" alt="thumbnail" />
                       </button>
@@ -75,14 +139,14 @@ export const CarDetails = () => {
 
               {/* Title & Key Specs */}
               <div>
-                <div className="flex justify-between items-start mb-4">
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start mb-6 gap-4">
                   <div>
                     <h1 className="text-3xl font-bold text-primary mb-2">{car.year} {car.make} {car.model}</h1>
                     <div className="flex items-center text-neutral-500">
                         <MapPin className="w-4 h-4 mr-1" /> {car.location}
                     </div>
                   </div>
-                  <div className="text-right">
+                  <div className="md:text-right">
                     <p className="text-3xl font-bold text-accent">
                         {new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(car.price)}
                     </p>
@@ -167,8 +231,8 @@ export const CarDetails = () => {
                        </div>
                        
                        <div className="grid grid-cols-2 gap-3">
-                         <Button variant="outline" className="w-full" icon={MessageCircle}>Message</Button>
-                         <Button variant="outline" className="w-full" icon={Phone}>Call</Button>
+                         <Button variant="outline" className="w-full" icon={MessageCircle} onClick={handleMessage}>Message</Button>
+                         <Button variant="outline" className="w-full" icon={Phone} onClick={handleCall}>Call</Button>
                        </div>
                     </div>
 
@@ -192,7 +256,14 @@ export const CarDetails = () => {
           </div>
         </div>
       </div>
+      
+      {/* Mobile Sticky Action Footer */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200 p-4 md:hidden z-40 flex gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+          <Button variant="outline" className="flex-1 border-neutral-300" icon={MessageCircle} onClick={handleMessage}>Message</Button>
+          <Button variant="primary" className="flex-1" icon={Phone} onClick={handleCall}>Call Seller</Button>
+      </div>
 
+      {/* Offer Modal */}
       <Modal isOpen={isOfferModalOpen} onClose={() => setOfferModalOpen(false)} title={offerSent ? "Offer Sent!" : "Make an Offer"}>
          {offerSent ? (
             <div className="text-center py-8">
@@ -230,6 +301,73 @@ export const CarDetails = () => {
             </div>
          )}
       </Modal>
+
+      {/* Chat Modal */}
+      {isChatOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsChatOpen(false)} />
+            <div className="relative bg-white w-full max-w-md h-[600px] max-h-[90vh] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                {/* Chat Header */}
+                <div className="bg-primary p-4 flex items-center justify-between text-white shrink-0">
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <img src={seller.logoUrl} alt={seller.name} className="w-10 h-10 rounded-full border-2 border-white/20 object-cover" />
+                            <span className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-primary rounded-full"></span>
+                        </div>
+                        <div>
+                            <h3 className="font-bold text-sm">{seller.name}</h3>
+                            <p className="text-xs text-neutral-400">Online now</p>
+                        </div>
+                    </div>
+                    <button onClick={() => setIsChatOpen(false)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+                        <X className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-neutral-50">
+                    {/* Car Context */}
+                    <div className="flex justify-center mb-4">
+                         <div className="bg-white p-2 rounded-lg shadow-sm border border-neutral-100 flex items-center gap-3 max-w-[90%]">
+                             <img src={car.images[0]} className="w-12 h-12 object-cover rounded" />
+                             <div className="text-xs">
+                                 <p className="font-bold text-primary">{car.year} {car.make} {car.model}</p>
+                                 <p className="text-accent font-bold">{new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(car.price)}</p>
+                             </div>
+                         </div>
+                    </div>
+
+                    {chatHistory.map((msg, idx) => (
+                        <div key={idx} className={`flex ${msg.sender === 'me' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[80%] p-3 rounded-2xl text-sm ${msg.sender === 'me' ? 'bg-accent text-white rounded-tr-none' : 'bg-white text-neutral-700 border border-neutral-200 rounded-tl-none shadow-sm'}`}>
+                                <p>{msg.text}</p>
+                                <span className={`text-[10px] block mt-1 ${msg.sender === 'me' ? 'text-white/70' : 'text-neutral-400'}`}>{msg.time}</span>
+                            </div>
+                        </div>
+                    ))}
+                    <div ref={chatEndRef} />
+                </div>
+
+                {/* Chat Input */}
+                <form onSubmit={sendChatMessage} className="p-3 bg-white border-t border-neutral-100 shrink-0 flex gap-2">
+                    <input 
+                        type="text" 
+                        value={chatMessage}
+                        onChange={(e) => setChatMessage(e.target.value)}
+                        placeholder="Type a message..."
+                        className="flex-1 bg-neutral-100 border-0 rounded-full px-4 py-3 text-sm focus:ring-2 focus:ring-accent/20 outline-none"
+                    />
+                    <button 
+                        type="submit" 
+                        disabled={!chatMessage.trim()}
+                        className="bg-accent text-white p-3 rounded-full hover:bg-accent-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+                    >
+                        <Send className="w-5 h-5" />
+                    </button>
+                </form>
+            </div>
+        </div>
+      )}
     </Layout>
   );
 };

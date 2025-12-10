@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout } from '../components/Layout';
 import { Button, Input } from '../components/ui';
-import { Mail, Lock, Smartphone } from 'lucide-react';
+import { Mail, Lock, Smartphone, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { AppRoute } from '../types';
 
@@ -18,8 +18,21 @@ export const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <div className="flex-1 flex items-center justify-center p-4">
-         <div className="w-full max-w-md bg-white p-8">
+      {/* Top Navigation Bar for Auth Page */}
+      <div className="w-full max-w-7xl mx-auto px-4 py-4">
+         <button 
+           onClick={() => navigate(AppRoute.HOME)} 
+           className="inline-flex items-center text-neutral-500 hover:text-primary transition-colors font-medium text-sm group"
+         >
+           <div className="p-2 rounded-full group-hover:bg-neutral-100 mr-2 transition-colors">
+             <ArrowLeft className="w-5 h-5" />
+           </div>
+           Back to Home
+         </button>
+      </div>
+
+      <div className="flex-1 flex items-start justify-center p-4 pt-10">
+         <div className="w-full max-w-md bg-white">
             <div className="text-center mb-10">
                 <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-2xl mx-auto mb-4">M</div>
                 <h1 className="text-3xl font-bold text-primary mb-2">{isLogin ? 'Welcome back' : 'Create an account'}</h1>
@@ -66,10 +79,6 @@ export const Auth = () => {
                     {isLogin ? 'Sign up' : 'Log in'}
                 </button>
             </p>
-            
-            <div className="mt-8 text-center">
-                 <button onClick={() => navigate(AppRoute.HOME)} className="text-sm text-neutral-400 hover:text-primary">Return to Home</button>
-            </div>
          </div>
       </div>
     </div>

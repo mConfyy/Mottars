@@ -18,6 +18,15 @@
               accent: '#FF6600',
               'accent-hover': '#e65c00',
               secondary: '#F5F5F5',
+            },
+            animation: {
+              scroll: 'scroll 30s linear infinite',
+            },
+            keyframes: {
+              scroll: {
+                '0%': { transform: 'translateX(0)' },
+                '100%': { transform: 'translateX(-50%)' },
+              }
             }
           }
         }
@@ -31,6 +40,11 @@
       .no-scrollbar {
           -ms-overflow-style: none;  /* IE and Edge */
           scrollbar-width: none;  /* Firefox */
+      }
+      
+      /* Pause animation on hover */
+      .group:hover .animate-scroll {
+        animation-play-state: paused;
       }
     </style>
   <script type="importmap">

@@ -1,12 +1,14 @@
 import { Car, Seller, Review } from './types';
 
 export const BRANDS = [
-  { name: 'Toyota', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Toyota_carlogo.svg/1200px-Toyota_carlogo.svg.png' },
-  { name: 'Honda', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/38/Honda.svg/2560px-Honda.svg.png' },
-  { name: 'Mercedes', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/9/90/Mercedes-Benz_logo.svg/1024px-Mercedes-Benz_logo.svg.png' },
-  { name: 'Lexus', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Lexus_logo_2024.svg/1200px-Lexus_logo_2024.svg.png' },
-  { name: 'Ford', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Ford_logo_flat.svg/2560px-Ford_logo_flat.svg.png' },
-  { name: 'Hyundai', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Hyundai_Motor_Company_logo.svg/2560px-Hyundai_Motor_Company_logo.svg.png' },
+  { name: 'Toyota', logo: 'https://cdn.simpleicons.org/toyota' },
+  { name: 'Honda', logo: 'https://cdn.simpleicons.org/honda' },
+  { name: 'Mercedes', logo: 'https://cdn.simpleicons.org/mercedes' },
+  { name: 'Lexus', logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Lexus_logo_2024.svg/1024px-Lexus_logo_2024.svg.png' }, 
+  { name: 'Ford', logo: 'https://cdn.simpleicons.org/ford' },
+  { name: 'Hyundai', logo: 'https://cdn.simpleicons.org/hyundai' },
+  { name: 'BMW', logo: 'https://cdn.simpleicons.org/bmw' },
+  { name: 'Tesla', logo: 'https://cdn.simpleicons.org/tesla' },
 ];
 
 export const MOCK_SELLERS: Record<string, Seller> = {
@@ -14,21 +16,23 @@ export const MOCK_SELLERS: Record<string, Seller> = {
     id: 's1',
     name: 'Mikano Motors Verified',
     isVerified: true,
+    verificationStatus: 'verified',
     rating: 4.8,
     reviewCount: 124,
     joinedDate: '2021-05-12',
     type: 'Dealer',
-    logoUrl: 'https://picsum.photos/100/100?random=1'
+    logoUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200&h=200'
   },
   's2': {
     id: 's2',
     name: 'Chinedu Autos',
     isVerified: false,
+    verificationStatus: 'unverified',
     rating: 4.2,
     reviewCount: 15,
     joinedDate: '2023-01-20',
     type: 'Private',
-    logoUrl: 'https://picsum.photos/100/100?random=2'
+    logoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200&h=200'
   }
 };
 
@@ -45,8 +49,7 @@ export const MOCK_CARS: Car[] = [
     transmission: 'Automatic',
     sellerId: 's1',
     images: [
-      'https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?q=80&w=2070&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1590362891991-f776e747a588?q=80&w=2069&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1621007947382-bb3c399a7eeb?auto=format&fit=crop&q=80&w=1200', // White Camry-ish
     ],
     description: 'Clean title, accident free, full option 2021 Toyota Camry XSE. Panoramic roof, leather seats, navigation system.',
     features: ['Bluetooth', 'Backup Camera', 'Leather Seats', 'Navigation', 'Sunroof']
@@ -63,7 +66,7 @@ export const MOCK_CARS: Car[] = [
     transmission: 'Automatic',
     sellerId: 's1',
     images: [
-      'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1590076215667-875d4ef2d743?auto=format&fit=crop&q=80&w=1200',
     ],
     description: 'Pristine condition Lexus RX 350. Well maintained by certified mechanics. Keyless entry and start.',
     features: ['Keyless Entry', 'Heated Seats', 'Premium Audio', 'All-Wheel Drive']
@@ -80,7 +83,7 @@ export const MOCK_CARS: Car[] = [
     transmission: 'Automatic',
     sellerId: 's2',
     images: [
-      'https://images.unsplash.com/photo-1592750430926-526b75a27766?q=80&w=2069&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1592750430926-526b75a27766?auto=format&fit=crop&q=80&w=1200',
     ],
     description: 'Buy and drive Honda Accord. Engine and gear in perfect condition. AC chilling.',
     features: ['Alloy Wheels', 'Cruise Control', 'Power Windows']
@@ -97,10 +100,112 @@ export const MOCK_CARS: Car[] = [
     transmission: 'Automatic',
     sellerId: 's1',
     images: [
-      'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=2070&auto=format&fit=crop',
+      'https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=1200', // C-Class
     ],
     description: 'Luxury C300 with AMG package. Direct Belgium import.',
     features: ['AMG Kit', 'Burmester Sound', 'Leather Interior']
+  },
+  {
+    id: 'c5',
+    make: 'Ford',
+    model: 'Mustang GT',
+    year: 2022,
+    price: 45000000,
+    mileage: 5000,
+    location: 'Lagos, Lekki',
+    condition: 'Foreign Used',
+    transmission: 'Automatic',
+    sellerId: 's1',
+    images: [
+      'https://images.unsplash.com/photo-1584345604476-8ec5e12e42dd?auto=format&fit=crop&q=80&w=1200',
+    ],
+    description: 'Almost new Ford Mustang GT. V8 Engine, roar is unmistakable. Perfect weekend car.',
+    features: ['V8 Engine', 'Sport Mode', 'Leather Seats', 'Apple CarPlay']
+  },
+  {
+    id: 'c6',
+    make: 'Toyota',
+    model: 'Land Cruiser',
+    year: 2023,
+    price: 120000000,
+    mileage: 1200,
+    location: 'Abuja, Central',
+    condition: 'New',
+    transmission: 'Automatic',
+    sellerId: 's1',
+    images: [
+      'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&q=80&w=1200', // SUV
+    ],
+    description: 'Brand new 2023 Land Cruiser. Twin Turbo V6. The ultimate luxury SUV.',
+    features: ['Twin Turbo', '360 Camera', 'Cool Box', 'Rear Entertainment']
+  },
+  {
+    id: 'c7',
+    make: 'Hyundai',
+    model: 'Elantra',
+    year: 2017,
+    price: 7500000,
+    mileage: 68000,
+    location: 'Lagos, Surulere',
+    condition: 'Nigerian Used',
+    transmission: 'Automatic',
+    sellerId: 's2',
+    images: [
+      'https://images.unsplash.com/photo-1626859343360-1405e364670c?auto=format&fit=crop&q=80&w=1200', // Hyundai interior/exterior
+    ],
+    description: 'Fuel efficient Hyundai Elantra. Good for daily commute. New tires.',
+    features: ['Bluetooth', 'Fabric Seats', 'Economy Mode']
+  },
+  {
+    id: 'c8',
+    make: 'Mercedes-Benz',
+    model: 'G-Wagon G63',
+    year: 2021,
+    price: 180000000,
+    mileage: 10000,
+    location: 'Lagos, Ikoyi',
+    condition: 'Foreign Used',
+    transmission: 'Automatic',
+    sellerId: 's1',
+    images: [
+      'https://images.unsplash.com/photo-1520031441872-265e4ff70366?auto=format&fit=crop&q=80&w=1200',
+    ],
+    description: 'Matte Black G63 AMG. Red interior. Fully loaded.',
+    features: ['Night Package', 'Massage Seats', 'Carbon Fiber Trim']
+  },
+  {
+    id: 'c9',
+    make: 'Range Rover',
+    model: 'Velar',
+    year: 2020,
+    price: 42000000,
+    mileage: 28000,
+    location: 'Abuja, Wuse 2',
+    condition: 'Foreign Used',
+    transmission: 'Automatic',
+    sellerId: 's1',
+    images: [
+      'https://images.unsplash.com/photo-1606220838315-056192d5e927?auto=format&fit=crop&q=80&w=1200',
+    ],
+    description: 'Sleek Range Rover Velar. White exterior, black roof. Head-turner.',
+    features: ['Touch Pro Duo', 'Matrix LED', 'Meridian Sound']
+  },
+  {
+    id: 'c10',
+    make: 'Toyota',
+    model: 'Corolla',
+    year: 2015,
+    price: 6500000,
+    mileage: 85000,
+    location: 'Ibadan',
+    condition: 'Nigerian Used',
+    transmission: 'Automatic',
+    sellerId: 's2',
+    images: [
+      'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?auto=format&fit=crop&q=80&w=1200',
+    ],
+    description: 'Rugged and reliable Corolla. Engine is sound. First body.',
+    features: ['Fabric Seats', 'CD Player', 'Air Conditioning']
   },
 ];
 

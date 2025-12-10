@@ -18,6 +18,7 @@ export interface Seller {
   id: string;
   name: string;
   isVerified: boolean;
+  verificationStatus: 'unverified' | 'pending' | 'verified' | 'rejected';
   rating: number;
   reviewCount: number;
   joinedDate: string;
@@ -43,6 +44,7 @@ export interface Review {
 
 export enum AppRoute {
   HOME = '/',
+  ALL_CARS = '/cars',
   CAR_DETAILS = '/car/:id',
   LOGIN = '/login',
   SELLER_DASHBOARD = '/seller/dashboard',

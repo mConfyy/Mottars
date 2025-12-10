@@ -1,5 +1,5 @@
-import React from 'react';
-import { LucideIcon, Check, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { LucideIcon, Check, Loader2, Eye, EyeOff } from 'lucide-react';
 
 // --- BUTTON ---
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -54,15 +54,28 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input: React.FC<InputProps> = ({ label, error, icon: Icon, className = '', ...props }) => {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = props.type === 'password';
+
   return (
     <div className="w-full">
       {label && <label className="block text-sm font-medium text-neutral-700 mb-1.5">{label}</label>}
       <div className="relative">
         {Icon && <Icon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" />}
         <input
-          className={`w-full bg-white border ${error ? 'border-red-500' : 'border-neutral-200'} rounded-lg py-2.5 ${Icon ? 'pl-10' : 'pl-4'} pr-4 text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all ${className}`}
           {...props}
+          type={isPassword ? (showPassword ? 'text' : 'password') : props.type}
+          className={`w-full bg-white border ${error ? 'border-red-500' : 'border-neutral-200'} rounded-lg py-2.5 ${Icon ? 'pl-10' : 'pl-4'} ${isPassword ? 'pr-10' : 'pr-4'} text-primary focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all ${className}`}
         />
+        {isPassword && (
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-600 focus:outline-none"
+          >
+            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+          </button>
+        )}
       </div>
       {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
     </div>

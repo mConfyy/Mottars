@@ -4,16 +4,24 @@ import { HeroSearch, CarCard } from '../components/CarComponents';
 import { BRANDS, MOCK_CARS, MOCK_SELLERS } from '../constants';
 import { ArrowRight, Star } from 'lucide-react';
 import { Button } from '../components/ui';
+import { Link } from 'react-router-dom';
+import { AppRoute } from '../types';
 
 export const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredCars = useMemo(() => {
-    if (!searchQuery) return MOCK_CARS;
-    return MOCK_CARS.filter(car => 
-      car.make.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      car.model.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  // Show only first 4 cars on home page
+  const displayedCars = useMemo(() => {
+    // Filter out cars with no images
+    let cars = MOCK_CARS.filter(c => c.images && c.images.length > 0 && c.images[0]);
+    
+    if (searchQuery) {
+      cars = cars.filter(car => 
+        car.make.toLowerCase().includes(searchQuery.toLowerCase()) || 
+        car.model.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    }
+    return cars.slice(0, 4);
   }, [searchQuery]);
 
   return (
@@ -27,12 +35,14 @@ export const Home = () => {
             <h2 className="text-3xl font-bold text-primary mb-2">Featured Listings</h2>
             <p className="text-neutral-500">Curated cars from top rated sellers.</p>
           </div>
-          <Button variant="ghost" className="hidden sm:flex">View all cars <ArrowRight className="w-4 h-4 ml-2" /></Button>
+          <Link to={AppRoute.ALL_CARS}>
+             <Button variant="ghost" className="hidden sm:flex">View all cars <ArrowRight className="w-4 h-4 ml-2" /></Button>
+          </Link>
         </div>
 
-        {filteredCars.length > 0 ? (
+        {displayedCars.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            {filteredCars.map(car => (
+            {displayedCars.map(car => (
               <CarCard key={car.id} car={car} seller={MOCK_SELLERS[car.sellerId]} />
             ))}
           </div>
@@ -44,20 +54,39 @@ export const Home = () => {
         )}
 
         <div className="mt-12 text-center sm:hidden">
-            <Button variant="outline" className="w-full">View all cars</Button>
+            <Link to={AppRoute.ALL_CARS}>
+                <Button variant="outline" className="w-full">View all cars</Button>
+            </Link>
         </div>
       </section>
 
-      {/* Brands Scroll - Moved below features */}
-      <div className="bg-white border-y border-neutral-100 py-12 mb-8">
-        <div className="max-w-7xl mx-auto px-4">
-           <p className="text-center text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-8">Trusted by top brands</p>
-           <div className="overflow-x-auto no-scrollbar">
-               <div className="flex items-center gap-8 md:gap-16 md:justify-center min-w-max px-4">
-                  {BRANDS.map(brand => (
-                    <div key={brand.name} className="flex flex-col items-center gap-3 group cursor-pointer opacity-60 hover:opacity-100 transition-opacity">
-                      <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center p-4 group-hover:bg-white group-hover:shadow-lg transition-all border border-transparent group-hover:border-neutral-100">
-                        <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all" />
+      {/* Brands Scroll - Animated Gliding Marquee */}
+      <div className="bg-white border-y border-neutral-100 py-12 mb-8 overflow-hidden group">
+        <div className="max-w-7xl mx-auto px-4 mb-8">
+           <p className="text-center text-sm font-semibold text-neutral-400 uppercase tracking-wider">Trusted by top brands</p>
+        </div>
+        
+        <div className="relative flex overflow-hidden">
+           {/* Inner container for animation - duplicated for seamless loop */}
+           <div className="flex animate-scroll w-max hover:[animation-play-state:paused]">
+               {/* First set of logos */}
+               <div className="flex items-center gap-12 md:gap-24 px-6 md:px-12">
+                  {BRANDS.map((brand, i) => (
+                    <div key={`b1-${i}`} className="flex flex-col items-center gap-3 opacity-50 hover:opacity-100 transition-opacity cursor-pointer min-w-[80px]">
+                      <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center p-4 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-neutral-100">
+                        <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain grayscale hover:grayscale-0 transition-all" />
+                      </div>
+                      <span className="text-xs font-semibold uppercase tracking-wider">{brand.name}</span>
+                    </div>
+                  ))}
+               </div>
+               
+               {/* Duplicate set of logos for infinite loop */}
+               <div className="flex items-center gap-12 md:gap-24 px-6 md:px-12">
+                  {BRANDS.map((brand, i) => (
+                    <div key={`b2-${i}`} className="flex flex-col items-center gap-3 opacity-50 hover:opacity-100 transition-opacity cursor-pointer min-w-[80px]">
+                      <div className="w-20 h-20 bg-neutral-50 rounded-full flex items-center justify-center p-4 hover:bg-white hover:shadow-lg transition-all border border-transparent hover:border-neutral-100">
+                        <img src={brand.logo} alt={brand.name} className="w-full h-full object-contain grayscale hover:grayscale-0 transition-all" />
                       </div>
                       <span className="text-xs font-semibold uppercase tracking-wider">{brand.name}</span>
                     </div>
