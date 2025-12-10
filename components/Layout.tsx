@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, User, LogOut, PlusCircle } from 'lucide-react';
-import { Button } from './ui';
+import { Menu, X, User, LogOut, PlusCircle, Calendar } from 'lucide-react';
+import { Button, Modal } from './ui';
 import { AppRoute } from '../types';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isRentModalOpen, setIsRentModalOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -28,71 +29,102 @@ export const Navbar = () => {
     </Link>
   );
 
+  const NavButton: React.FC<{ onClick: () => void, children: React.ReactNode }> = ({ onClick, children }) => (
+    <button 
+      onClick={() => {
+        onClick();
+        setIsMobileMenuOpen(false);
+      }}
+      className="text-sm font-medium transition-colors text-neutral-600 hover:text-primary text-left"
+    >
+      {children}
+    </button>
+  );
+
   return (
-    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          
-          {/* Logo */}
-          <Link to={AppRoute.HOME} className="flex items-center gap-2 group">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl group-hover:bg-accent transition-colors">M</div>
-            <span className="text-xl font-bold tracking-tight text-primary">Mottars</span>
-          </Link>
-
-          {/* Desktop Nav */}
-          <nav className="hidden md:flex items-center gap-8">
-            <NavLink to={AppRoute.HOME}>Buy Car</NavLink>
-            <NavLink to={AppRoute.HOME}>Rent Car</NavLink>
-            <NavLink to={isAuthenticated ? AppRoute.SELLER_DASHBOARD : AppRoute.LOGIN}>Sell Car</NavLink>
+    <>
+      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-neutral-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
             
-            <div className="h-4 w-px bg-neutral-200 mx-2" />
-            
-            {isAuthenticated ? (
-               <div className="flex items-center gap-4">
-                 <Link to={AppRoute.SELLER_DASHBOARD} className="text-sm font-medium text-neutral-600 hover:text-primary">Dashboard</Link>
-                 <Button variant="ghost" size="sm" onClick={handleLogout} icon={LogOut}>Sign Out</Button>
-               </div>
-            ) : (
-              <div className="flex items-center gap-3">
-                <Link to={AppRoute.LOGIN} className="text-sm font-medium text-neutral-600 hover:text-primary">Log in</Link>
-                <Link to={AppRoute.LOGIN}>
-                    <Button size="sm">Get Started</Button>
-                </Link>
-              </div>
-            )}
-          </nav>
+            {/* Logo */}
+            <Link to={AppRoute.HOME} className="flex items-center gap-2 group">
+              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl group-hover:bg-accent transition-colors">M</div>
+              <span className="text-xl font-bold tracking-tight text-primary">Mottars</span>
+            </Link>
 
-          {/* Mobile Menu Toggle */}
-          <button 
-            className="md:hidden p-2 text-neutral-600"
-            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          >
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-neutral-100 shadow-xl p-4 flex flex-col gap-4 animate-in slide-in-from-top-2">
-            <NavLink to={AppRoute.HOME}>Buy Car</NavLink>
-            <NavLink to={AppRoute.HOME}>Rent Car</NavLink>
-            <NavLink to={AppRoute.SELLER_DASHBOARD}>Sell Car</NavLink>
-            <hr className="border-neutral-100" />
-            {isAuthenticated ? (
-                <>
-                  <NavLink to={AppRoute.SELLER_DASHBOARD}>Dashboard</NavLink>
-                  <Button variant="ghost" className="w-full justify-start" onClick={handleLogout} icon={LogOut}>Sign Out</Button>
-                </>
-            ) : (
-                <div className="grid grid-cols-2 gap-3">
-                   <Link to={AppRoute.LOGIN} onClick={() => setIsMobileMenuOpen(false)}><Button variant="outline" className="w-full">Log in</Button></Link>
-                   <Link to={AppRoute.LOGIN} onClick={() => setIsMobileMenuOpen(false)}><Button className="w-full">Get Started</Button></Link>
+            {/* Desktop Nav */}
+            <nav className="hidden md:flex items-center gap-8">
+              <NavLink to={AppRoute.ALL_CARS}>Buy Car</NavLink>
+              <NavButton onClick={() => setIsRentModalOpen(true)}>Rent Car</NavButton>
+              <NavLink to={isAuthenticated ? AppRoute.SELLER_DASHBOARD : AppRoute.LOGIN}>Sell Car</NavLink>
+              
+              <div className="h-4 w-px bg-neutral-200 mx-2" />
+              
+              {isAuthenticated ? (
+                 <div className="flex items-center gap-4">
+                   <Link to={AppRoute.SELLER_DASHBOARD} className="text-sm font-medium text-neutral-600 hover:text-primary">Dashboard</Link>
+                   <Button variant="ghost" size="sm" onClick={handleLogout} icon={LogOut}>Sign Out</Button>
+                 </div>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link to={AppRoute.LOGIN} className="text-sm font-medium text-neutral-600 hover:text-primary">Log in</Link>
+                  <Link to={AppRoute.LOGIN}>
+                      <Button size="sm">Get Started</Button>
+                  </Link>
                 </div>
-            )}
+              )}
+            </nav>
+
+            {/* Mobile Menu Toggle */}
+            <button 
+              className="md:hidden p-2 text-neutral-600"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
         </div>
-      )}
-    </header>
+
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-16 left-0 w-full bg-white border-b border-neutral-100 shadow-xl p-4 flex flex-col gap-4 animate-in slide-in-from-top-2 z-50">
+              <NavLink to={AppRoute.ALL_CARS}>Buy Car</NavLink>
+              <NavButton onClick={() => setIsRentModalOpen(true)}>Rent Car</NavButton>
+              <NavLink to={isAuthenticated ? AppRoute.SELLER_DASHBOARD : AppRoute.LOGIN}>Sell Car</NavLink>
+              <hr className="border-neutral-100" />
+              {isAuthenticated ? (
+                  <>
+                    <NavLink to={AppRoute.SELLER_DASHBOARD}>Dashboard</NavLink>
+                    <Button variant="ghost" className="w-full justify-start" onClick={handleLogout} icon={LogOut}>Sign Out</Button>
+                  </>
+              ) : (
+                  <div className="grid grid-cols-2 gap-3">
+                     <Link to={AppRoute.LOGIN} onClick={() => setIsMobileMenuOpen(false)}><Button variant="outline" className="w-full">Log in</Button></Link>
+                     <Link to={AppRoute.LOGIN} onClick={() => setIsMobileMenuOpen(false)}><Button className="w-full">Get Started</Button></Link>
+                  </div>
+              )}
+          </div>
+        )}
+      </header>
+
+      {/* Rent Car Coming Soon Modal */}
+      <Modal isOpen={isRentModalOpen} onClose={() => setIsRentModalOpen(false)} title="Coming Soon">
+          <div className="text-center py-6">
+              <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-blue-600">
+                  <Calendar className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold mb-2">Car Rentals</h3>
+              <p className="text-neutral-500 mb-6">
+                  We are working hard to bring you the best car rental experience in Nigeria. 
+                  Short-term and long-term rentals will be available soon.
+              </p>
+              <div className="flex justify-center">
+                   <Button onClick={() => setIsRentModalOpen(false)}>Got it</Button>
+              </div>
+          </div>
+      </Modal>
+    </>
   );
 };
 
@@ -114,9 +146,9 @@ export const Footer = () => {
           <div>
             <h4 className="font-semibold mb-4 text-white">Marketplace</h4>
             <ul className="space-y-2 text-sm text-neutral-400">
-              <li><a href="#" className="hover:text-accent transition-colors">Buy a Car</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Sell a Car</a></li>
-              <li><a href="#" className="hover:text-accent transition-colors">Rent a Car</a></li>
+              <li><Link to={AppRoute.ALL_CARS} className="hover:text-accent transition-colors">Buy a Car</Link></li>
+              <li><Link to={AppRoute.LOGIN} className="hover:text-accent transition-colors">Sell a Car</Link></li>
+              <li><span className="text-neutral-600 cursor-not-allowed">Rent a Car (Coming Soon)</span></li>
               <li><a href="#" className="hover:text-accent transition-colors">Car Inspections</a></li>
             </ul>
           </div>
